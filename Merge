@@ -1,0 +1,108 @@
+public static void Сopy(String table1, String table2, Connection from, Connection to) throws SQLException {
+			
+		        	
+		    	    try {
+		    	    	
+		    	    	 PreparedStatement s1 = from.prepareStatement("select * from " + table1);
+		    	    	
+		    	         ResultSet rs = s1.executeQuery();
+		    	         
+		    	         ResultSetMetaData meta = rs.getMetaData();
+		    	         
+		    	         ArrayList <String> columns = new ArrayList <String>();
+		    	         
+		    	         for (int i = 1; i <= meta.getColumnCount(); i++) 
+		    		            columns.add(meta.getColumnName(i));
+		    	         
+		    	         for (int i = 0; i < meta.getColumnCount(); i++)
+		    	         		System.out.println(columns.get(i));
+		    	         		
+		    	             	         
+		    	         
+		    	         
+		    	         
+		    	     try  { 
+		    /*	    	 PreparedStatement s2 = to.prepareStatement(
+		    		                "INSERT INTO " + table2 + " ("
+		    		              + columns.stream().collect(Collectors.joining(","))
+		    		              + ") VALUES ("
+		    		              + columns.stream().map(c -> "?").collect(Collectors.joining(",")) + ")" );
+		    */
+		    	    	 
+		    	  /*  	 PreparedStatement s2 = to.prepareStatement("MERGE INTO " + table2 +" target"
+		    	    			 + " USING (SELECT ? Id,"
+		    	    			 +  "? Name) src "
+		    	    			       			
+		    	    			 + "ON (target.Id=src.Id)"
+		    	    			       			        
+		    	    			 + " WHEN MATCHED THEN UPDATE SET Name=src.Name  "
+
+
+		    	    			       			
+		    	    			 + "WHEN NOT MATCHED THEN INSERT (Id, Name)"
+		    	    			              			
+		    	    			       			
+		    	    			 + " VALUES (src.Id, src.Name)"
+		    	    			 
+		    	    			 + ";");
+		    	   	*/ 
+		             	    	 
+		   	    
+		    	     PreparedStatement s2 = to.prepareStatement(
+		    		                "MERGE INTO " + table2 + " target"
+		    		          //    + " USING (SELECT " + columns.stream().collect(Collectors.joining(",")) + " src"
+		    		           //     + " USING (SELECT " + columns.stream().map(c -> "?").collect(Collectors.joining(",")) + ") src"
+		    		           //     + " USING (SELECT " + columns.stream().map((c) ->"?"+c).peek(System.out::println).collect(Collectors.joining(",")) + ") src"
+		    		           //       + " USING (SELECT " + columns.stream().collect(Collectors.joining(",")) + ") src"
+		    		                
+		    		            + " USING (SELECT ? Id, ? Name, ? Year) src"   
+		    		              + " ON (target.Id=src.Id)"
+		    		 				
+		    		          
+		    		              + " WHEN MATCHED THEN UPDATE SET Name=src.Name, Year=src.Year "
+		    		          //   +  " WHEN MATCHED THEN UPDATE SET ("+columns.stream().map(c -> "?").collect(Collectors.joining(","))+") "
+		    		              + "WHEN NOT MATCHED THEN INSERT ("+columns.stream().collect(Collectors.joining(","))+")"		    		           
+		    		            + " VALUES ("+  columns.stream().collect(Collectors.joining(","))+")"
+		    		           //  + " VALUES (src.Id, src.Name, src.Year)"
+		    		              +	 ";");
+			
+		    		      while (rs.next()) {
+		    	       
+		    	               for (int i = 1; i <= meta.getColumnCount(); i++) {
+		    	                
+		    	               	            	   
+		    	          
+		    	                    s2.setObject(i, rs.getObject(i));     
+		    	               													}
+		    	            
+		    	        
+		    	       
+		    	                   s2.addBatch();
+		    	                     
+		    	     
+		    	            				} 
+		    	
+		    	         
+		    	         s2.executeBatch();
+		    	    	 
+		          
+		    	    
+		    	         	    	         
+		    	         
+		    	
+		    	   	 
+		    	    	 
+		    	       
+		    	      
+		    	         
+		    	     }catch (SQLException e) {
+		    				// TODO Auto-generated catch block
+		    				e.printStackTrace();
+		    									}
+		    	         }
+		    	    catch (SQLException e) {
+		    			// TODO Auto-generated catch block
+		    			e.printStackTrace();
+		    								}
+		    	      
+	}
